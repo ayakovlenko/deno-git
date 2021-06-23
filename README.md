@@ -5,7 +5,9 @@
 Usage:
 
 ```typescript
-import * as git from "https://raw.githubusercontent.com/ayakovlenko/deno-git/v0.2.0/mod.ts";
+import * as git from "https://raw.githubusercontent.com/ayakovlenko/deno-git/v$VERSION/mod.ts";
+```
 
+```
 await git.run(["log", "--oneline"];
 ```
