@@ -3,7 +3,7 @@ import { GitExecResult, GitRunner } from "../mod.ts";
 class MockGitRunner implements GitRunner {
   #matches: Map<string, GitExecResult> = new Map();
 
-  run(args: string[]): Promise<GitExecResult> {
+  run(_cwd: string, args: string[]): Promise<GitExecResult> {
     const key = args.join(" ");
     const value = this.#matches.get(key);
 

@@ -6,7 +6,7 @@ interface GitExecResult {
 }
 
 interface GitRunner {
-  run(args: string[]): Promise<GitExecResult>;
+  run(cwd: string, args: string[]): Promise<GitExecResult>;
 }
 
 class RealGitRunner implements GitRunner {
@@ -14,11 +14,12 @@ class RealGitRunner implements GitRunner {
 
   #decode = (data: Uint8Array): string => this.#td.decode(data);
 
-  async run(args: string[]): Promise<GitExecResult> {
+  async run(cwd: string, args: string[]): Promise<GitExecResult> {
     const process = Deno.run({
       cmd: ["git", ...args],
       stdout: "piped",
       stderr: "piped",
+      cwd,
     });
 
     const { success, code } = await process.status();
@@ -39,9 +40,10 @@ class RealGitRunner implements GitRunner {
 
 const run = (
   args: string[],
+  cwd: string = ".",
   runner: GitRunner = new RealGitRunner(),
 ): Promise<GitExecResult> => {
-  return runner.run(args);
+  return runner.run(cwd, args);
 };
 
 export { run };

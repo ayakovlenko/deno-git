@@ -22,6 +22,6 @@ Deno.test({
     };
     mock.mock(["dummy"], result);
 
-    assertEquals(await git.run(["dummy"], mock), result);
+    assertEquals(await git.run(["dummy"], ".", mock), result);
   },
 });
