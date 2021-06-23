@@ -5,30 +5,45 @@ interface GitExecResult {
   stderrOutput: string;
 }
 
-const git = async (...args: string[]): Promise<GitExecResult> => {
-  const process = Deno.run({
-    cmd: ["git", ...args],
-    stdout: "piped",
-    stderr: "piped",
-  });
+interface GitRunner {
+  run(args: string[]): Promise<GitExecResult>;
+}
 
-  const { success, code } = await process.status();
+class RealGitRunner implements GitRunner {
+  #td = new TextDecoder();
 
-  const stdout = await process.output().then(decode);
-  const stderrOutput = await process.stderrOutput().then(decode);
+  #decode = (data: Uint8Array): string => this.#td.decode(data);
 
-  process?.close();
+  async run(args: string[]): Promise<GitExecResult> {
+    const process = Deno.run({
+      cmd: ["git", ...args],
+      stdout: "piped",
+      stderr: "piped",
+    });
 
-  return {
-    success,
-    code,
-    stdout,
-    stderrOutput,
-  };
+    const { success, code } = await process.status();
+
+    const stdout = await process.output().then(this.#decode);
+    const stderrOutput = await process.stderrOutput().then(this.#decode);
+
+    process?.close();
+
+    return {
+      success,
+      code,
+      stdout,
+      stderrOutput,
+    };
+  }
+}
+
+const run = (
+  args: string[],
+  runner: GitRunner = new RealGitRunner(),
+): Promise<GitExecResult> => {
+  return runner.run(args);
 };
 
-const td = new TextDecoder();
+export { run };
 
-const decode = (data: Uint8Array): string => td.decode(data);
-
-export { git };
+export type { GitExecResult, GitRunner };
