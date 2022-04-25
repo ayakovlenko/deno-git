@@ -8,6 +8,9 @@ Usage:
 import * as git from "https://raw.githubusercontent.com/ayakovlenko/deno-git/v$VERSION/mod.ts";
 ```
 
-```
-await git.run(["log", "--oneline"];
+```typescript
+await git.run({
+  args: ["log", "--oneline"],
+  cwd: "/path/to/repo/", // "." otherwise
+});
 ```
