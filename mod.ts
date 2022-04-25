@@ -38,11 +38,17 @@ class RealGitRunner implements GitRunner {
   }
 }
 
-const run = (
-  args: string[],
-  cwd: string = ".",
-  runner: GitRunner = new RealGitRunner(),
-): Promise<GitExecResult> => {
+type RunOpts = {
+  args: string[];
+  cwd?: string;
+  runner?: GitRunner;
+};
+
+const run = ({
+  args,
+  cwd = ".",
+  runner = new RealGitRunner(),
+}: RunOpts): Promise<GitExecResult> => {
   return runner.run(cwd, args);
 };
 

@@ -5,7 +5,11 @@ import { assertEquals } from "./deps_test.ts";
 Deno.test({
   name: "real git",
   fn: async () => {
-    console.log(await git.run(["log", "--oneline"]));
+    console.log(
+      await git.run({
+        args: ["log", "--oneline"],
+      }),
+    );
   },
 });
 
@@ -22,6 +26,13 @@ Deno.test({
     };
     mock.mock(["dummy"], result);
 
-    assertEquals(await git.run(["dummy"], ".", mock), result);
+    assertEquals(
+      await git.run({
+        args: ["dummy"],
+        cwd: ".",
+        runner: mock,
+      }),
+      result,
+    );
   },
 });
