@@ -52,6 +52,40 @@ const run = ({
   return runner.run(cwd, args);
 };
 
-export { run };
+interface GitVersion {
+  major: number;
+  minor: number;
+  patch: number;
+  platform?: string;
+}
 
-export type { GitExecResult, GitRunner };
+const versionRegex = /^git version (\d+)\.(\d+)\.(\d+)( \((.+)\))?$/;
+
+const version = async (runner: GitRunner = new RealGitRunner()) => {
+  const { success, stdout, stderrOutput } = await run({
+    args: ["version"],
+    runner,
+  });
+
+  if (!success) {
+    throw new Error(stderrOutput);
+  }
+
+  const match = stdout.trim().match(versionRegex);
+  if (!match) {
+    throw new Error(`git version does not match regex ${versionRegex}`);
+  }
+
+  const [major, minor, patch, _, platform] = match.slice(1);
+  const version: GitVersion = {
+    major: parseInt(major),
+    minor: parseInt(minor),
+    patch: parseInt(patch),
+    platform,
+  };
+  return version;
+};
+
+export { run, version };
+
+export type { GitExecResult, GitRunner, GitVersion };

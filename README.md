@@ -14,3 +14,8 @@ await git.run({
   cwd: "/path/to/repo/", // "." otherwise
 });
 ```
+
+```typescript
+console.log(await git.version());
+// { major: 2, minor: 36, patch: 0, platform: undefined }
+```
